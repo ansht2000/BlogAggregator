@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"github/ansht2000/BlogAggregator/internal/rss"
+	"github.com/ansht2000/BlogAggregator/internal/rss"
 )
 
 func handlerAgg(s *state, cmd command) error {

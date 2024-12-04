@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github/ansht2000/BlogAggregator/internal/database"
+	"github.com/ansht2000/BlogAggregator/internal/database"
 	"time"
 
 	"github.com/google/uuid"

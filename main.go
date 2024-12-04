@@ -6,8 +6,8 @@ import (
 	"log"
 	"os"
 
-	"github/ansht2000/BlogAggregator/internal/config"
-	"github/ansht2000/BlogAggregator/internal/database"
+	"github.com/ansht2000/BlogAggregator/internal/config"
+	"github.com/ansht2000/BlogAggregator/internal/database"
 
 	_ "github.com/lib/pq"
 )
