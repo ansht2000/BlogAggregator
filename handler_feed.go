@@ -10,6 +10,25 @@ import (
 	"github.com/google/uuid"
 )
 
+func handlerFeeds (s *state, cmd command) error {
+	feeds, err := s.db.GetFeeds(context.Background())
+	if err != nil {
+		return err
+	}
+
+	for _, feed := range feeds {
+		name, err := s.db.GetUserById(context.Background(), feed.UserID)
+		if err != nil {
+			return err
+		}
+		fmt.Printf("* Name:          %s\n", feed.Name)
+		fmt.Printf("* URL:           %s\n", feed.Url)
+		fmt.Printf("* User Name:     %s\n", name)
+	}
+
+	return nil
+}
+
 func handlerAddFeed(s *state, cmd command) error {
 	if len(cmd.Args) != 2 {
 		return errors.New("must provide name of feed and url")
