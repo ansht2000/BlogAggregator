@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"github.com/ansht2000/BlogAggregator/internal/database"
 	"time"
@@ -29,18 +28,13 @@ func handlerFeeds(s *state, cmd command) error {
 	return nil
 }
 
-func handlerAddFeed(s *state, cmd command) error {
+func handlerAddFeed(s *state, cmd command, user database.User) error {
 	if len(cmd.Args) != 2 {
-		return errors.New("must provide name of feed and url")
+		return fmt.Errorf("usage: %s <name> <url>", cmd.Name)
 	}
 
 	name := cmd.Args[0]
 	url := cmd.Args[1]
-	currentUserName := s.cfg.CurrentUserName
-	currentUser, err := s.db.GetUser(context.Background(), currentUserName)
-	if err != nil {
-		return err
-	}
 	
 	feedParams := database.CreateFeedParams{
 		ID: uuid.New(),
@@ -48,7 +42,7 @@ func handlerAddFeed(s *state, cmd command) error {
 		UpdatedAt: time.Now(),
 		Name: name,
 		Url: url,
-		UserID: currentUser.ID,
+		UserID: user.ID,
 	}
 	feed, err := s.db.CreateFeed(context.Background(), feedParams)
 	if err != nil {
@@ -59,7 +53,7 @@ func handlerAddFeed(s *state, cmd command) error {
 		ID: uuid.New(),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
-		UserID: currentUser.ID,
+		UserID: user.ID,
 		FeedID: feed.ID,
 	}
 	feedFollow, err := s.db.CreateFeedFollow(context.Background(), feedFollowParams)
@@ -68,7 +62,7 @@ func handlerAddFeed(s *state, cmd command) error {
 	}
 
 	fmt.Println("Feed created successfully:")
-	printFeed(feed, currentUser)
+	printFeed(feed, user)
 	fmt.Println()
 	fmt.Println("Feed followed successfully:")
 	printFeedFollow(feedFollow.UserName, feedFollow.FeedName)

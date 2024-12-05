@@ -12,7 +12,7 @@ import (
 
 func handlerLogin(s *state, cmd command) error {
 	if len(cmd.Args) != 1 {
-		return errors.New("login command needs a username")
+		return fmt.Errorf("usage: %s <name>", cmd.Name)
 	}
 
 	name := cmd.Args[0]
@@ -24,13 +24,13 @@ func handlerLogin(s *state, cmd command) error {
 	if err = s.cfg.SetUser(name); err != nil {
 		return err
 	}
-	fmt.Println("User has been set")
+	fmt.Printf("Logged in as user: %s\n", name)
 	return nil
 }
 
 func handlerRegister(s *state, cmd command) error {
 	if len(cmd.Args) != 1 {
-		return errors.New("register command needs a name")
+		return fmt.Errorf("usage: %s <name>", cmd.Name)
 	}
 	name := cmd.Args[0]
 	
