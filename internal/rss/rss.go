@@ -1,11 +1,14 @@
 package rss
 
 import (
+	"bytes"
 	"context"
 	"encoding/xml"
-	"html"
 	"io"
 	"net/http"
+	"strings"
+
+	"golang.org/x/net/html"
 )
 
 type RSSFeed struct {
@@ -24,12 +27,28 @@ type RSSItem struct {
 	PubDate     string `xml:"pubDate"`
 }
 
+func stripHTMLTags(input string) string {
+	tokenizer := html.NewTokenizer(strings.NewReader(input))
+	var buffer bytes.Buffer
+
+	for {
+		tokenType := tokenizer.Next()
+		if tokenType == html.ErrorToken {
+			break
+		}
+		if tokenType == html.TextToken {
+			buffer.WriteString(string(tokenizer.Text()))
+		}
+	}
+	return buffer.String()
+}
+
 func unescapeHTMLString(feed *RSSFeed) {
-	feed.Channel.Title = html.UnescapeString(feed.Channel.Title)
-	feed.Channel.Description = html.UnescapeString(feed.Channel.Description)
+	feed.Channel.Title = stripHTMLTags(html.UnescapeString(feed.Channel.Title))
+	feed.Channel.Description = stripHTMLTags(html.UnescapeString(feed.Channel.Description))
 	for i, item := range feed.Channel.Item {
-		feed.Channel.Item[i].Title = html.UnescapeString(item.Title)
-		feed.Channel.Item[i].Description = html.UnescapeString(item.Description)
+		feed.Channel.Item[i].Title = stripHTMLTags(html.UnescapeString(item.Title))
+		feed.Channel.Item[i].Description = stripHTMLTags(html.UnescapeString(item.Description))
 	}
 }
 
